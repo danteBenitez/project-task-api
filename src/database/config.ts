@@ -10,7 +10,7 @@ export function getConnectionOptions(envConfig: ENVIRONMENT['DB']) {
       type: envConfig.DIALECT,
       url: envConfig.URL,
       synchronize: true,
-      migrations: ['./migrations/*.ts'],
+      migrations: ['src/database/migrations/*.ts'],
       entities: [User],
       logging: true,
     } as DataSourceOptions;
@@ -27,7 +27,7 @@ export function getConnectionOptions(envConfig: ENVIRONMENT['DB']) {
     username: configWithoutUrl.USER,
     password: configWithoutUrl.PASSWORD,
     database: configWithoutUrl.NAME,
-    migrations: ['./migrations/*.ts'],
+    migrations: ['src/database/migrations/*.ts'],
     entities: [User],
     logging: true,
   } as DataSourceOptions;
