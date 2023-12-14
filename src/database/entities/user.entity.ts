@@ -1,3 +1,4 @@
+import { Project } from '../../projects/entities/project.entity';
 import {
   Entity,
   Column,
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -23,6 +25,10 @@ export class User {
 
   @Column()
   avatar_url: string;
+
+  // A user can create many projects
+  @OneToMany(() => Project, (project) => project.author)
+  projects: Project[];
 
   @CreateDateColumn()
   created_at: Date;

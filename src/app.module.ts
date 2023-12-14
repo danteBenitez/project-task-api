@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configEnv, { ENVIRONMENT } from './config/env';
 import { getConnectionOptions } from './database/config';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { getConnectionOptions } from './database/config';
       },
       inject: [ConfigService],
     }),
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import getEnvConfig, { ENVIRONMENT } from '../config/env';
-import { User } from './entities/user.entity';
 
 export function getConnectionOptions(envConfig: ENVIRONMENT['DB']) {
   // If DB_URL is provided, then connect with that.
@@ -11,7 +10,8 @@ export function getConnectionOptions(envConfig: ENVIRONMENT['DB']) {
       url: envConfig.URL,
       synchronize: true,
       migrations: ['src/database/migrations/*.ts'],
-      entities: [User],
+      entities: ['src/**/*.entity.ts'],
+      autoLoadEntities: true,
       logging: true,
     } as DataSourceOptions;
   }
@@ -28,7 +28,8 @@ export function getConnectionOptions(envConfig: ENVIRONMENT['DB']) {
     password: configWithoutUrl.PASSWORD,
     database: configWithoutUrl.NAME,
     migrations: ['src/database/migrations/*.ts'],
-    entities: [User],
+    entities: ['src/**/*.entity.ts'],
+    autoLoadEntities: true,
     logging: true,
   } as DataSourceOptions;
 }
