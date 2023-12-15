@@ -1,19 +1,29 @@
-import { User } from '../entities/user.entity';
 import {
-  IsNotEmpty,
   IsEmail,
-  IsString,
+  IsNotEmpty,
   IsOptional,
+  IsString,
   IsStrongPassword,
-  MinLength,
   IsUrl,
+  MinLength,
 } from 'class-validator';
+import { IsUnique } from '../../decorators/unique.decorator';
+import { User } from '../entities/user.entity';
 
 export class CreateUserDto extends User {
   @IsString({
     message: 'A user must have a name',
   })
   @IsNotEmpty()
+  @IsUnique(
+    {
+      entity: User,
+      columnName: 'name',
+    },
+    {
+      message: 'User name must be unique',
+    },
+  )
   name: string;
 
   @IsNotEmpty()
@@ -21,6 +31,15 @@ export class CreateUserDto extends User {
     message: 'A user must have an email',
   })
   @IsEmail()
+  @IsUnique(
+    {
+      entity: User,
+      columnName: 'email',
+    },
+    {
+      message: 'User email must be unique',
+    },
+  )
   email: string;
 
   @IsNotEmpty()
@@ -41,13 +60,16 @@ export class CreateUserDto extends User {
 
   @IsOptional()
   @IsString({
-    message: "A user's avatar must be a string",
+    message: "A user's avatar URL must be a string",
   })
-  @IsUrl({
-    require_protocol: true,
-  }, {
-    message: "Invalid avatar URL"
-  })
+  @IsUrl(
+    {
+      require_protocol: true,
+    },
+    {
+      message: 'Invalid avatar URL',
+    },
+  )
   @MinLength(10)
   avatar_url: string;
 }

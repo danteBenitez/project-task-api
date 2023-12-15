@@ -6,6 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { FindOneParams } from './dto/params/find-one.params';
+import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { ENVIRONMENT } from 'src/config/env';
 
 export class UserConflictError extends Error {
   message = 'User already exists';
@@ -18,6 +21,7 @@ export class UserNotFoundError extends Error {
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly config: ConfigService
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<FindUserResponse> {
@@ -32,13 +36,17 @@ export class UsersService {
       ],
     });
 
-    if (!existing) {
+    if (existing) {
       throw new UserConflictError();
     }
 
     const created = this.userRepository.create(createUserDto);
-    await this.userRepository.save(created);
-    return new FindUserResponse(created);
+    const merged = this.userRepository.merge(created, {
+      // @ts-expect-error SALT_ROUNDS is not being recognized as a valid key
+      password: await bcrypt.hash(createUserDto.password, +this.config.get<ENVIRONMENT["SALT_ROUNDS"]>('SALT_ROUNDS')),
+    })
+    await this.userRepository.save(merged);
+    return new FindUserResponse(merged);
   }
 
   async findAll(): Promise<FindUserResponse[]> {

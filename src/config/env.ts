@@ -5,9 +5,10 @@ const configWithDBUrl = z.object({
     PORT: z.string(),
     DB: z.object({
         DIALECT: z.enum(['postgres', 'mysql', 'mariadb', 'sqlite', 'mssql']),
-        URL: z.string().url().default('postgres://postgres:postgres@localhost:5432/postgres'),
+        URL: z.string().url(),
         HAS_URL: z.literal(true)
-    })
+    }),
+    SALT_ROUNDS: z.string()
 })
 
 const configWithoutDBUrl = z.object({
@@ -20,7 +21,8 @@ const configWithoutDBUrl = z.object({
         PORT: z.number(),
         HAS_URL: z.literal(false),
         DIALECT: z.enum(['postgres', 'mysql', 'mariadb', 'sqlite', 'mssql'])
-    })
+    }),
+    SALTS_ROUNDS: z.string()
 });
 
 const configSchema = z.union([configWithDBUrl, configWithoutDBUrl]);
@@ -37,7 +39,8 @@ export default () => {
             PORT: process.env.DB_PORT ?? 5432,
             HAS_URL: !!process.env.DB_URL,
             DIALECT: process.env.DB_DIALECT ?? 'postgres'
-        }
+        },
+        SALT_ROUNDS: process.env.SALT_ROUNDS ?? '10'
     });
 
     return validated;

@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configEnv, { ENVIRONMENT } from './config/env';
 import { getConnectionOptions } from './database/config';
+import { IsUniqueConstraint } from './decorators/unique.decorator';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 
@@ -26,6 +27,6 @@ import { UsersModule } from './users/users.module';
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, IsUniqueConstraint],
 })
 export class AppModule {}

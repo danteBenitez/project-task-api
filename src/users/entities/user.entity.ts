@@ -23,7 +23,9 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   avatar_url: string;
 
   // A user can create many projects
