@@ -25,21 +25,6 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<FindUserResponse> {
-    const existing = await this.userRepository.findOne({
-      where: [
-        {
-          email: createUserDto.email,
-        },
-        {
-          name: createUserDto.name,
-        },
-      ],
-    });
-
-    if (existing) {
-      throw new UserConflictError();
-    }
-
     const created = this.userRepository.create(createUserDto);
     const merged = this.userRepository.merge(created, {
       // @ts-expect-error SALT_ROUNDS is not being recognized as a valid key
@@ -50,7 +35,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<FindUserResponse[]> {
-    return this.userRepository.find();
+    return (await this.userRepository.find()).map(user => new FindUserResponse(user));
   }
 
   async findOne({ id }: FindOneParams): Promise<FindUserResponse> {
