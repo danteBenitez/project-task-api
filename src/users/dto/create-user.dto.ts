@@ -21,7 +21,7 @@ export class CreateUserDto extends User {
       columnName: 'name',
     },
     {
-      message: 'User name must be unique',
+      message: 'Conflicting user'
     },
   )
   name: string;
@@ -37,7 +37,7 @@ export class CreateUserDto extends User {
       columnName: 'email',
     },
     {
-      message: 'User email must be unique',
+      message: 'Conflicting user',
     },
   )
   email: string;
