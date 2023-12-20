@@ -29,12 +29,18 @@ export class ExistsConstraint implements ValidatorConstraintInterface {
     const { entity, columnName } = args.constraints[0];
     this.entity = entity;
     this.columnName = columnName;
-    const existing = await this.entityManager.getRepository(entity).findOne({
-      where: {
-        [columnName]: property,
-      },
-    });
-    return !!existing;
+    try {
+
+      const existing = await this.entityManager.getRepository(entity).findOne({
+        where: {
+          [columnName]: property,
+        },
+      });
+      return !!existing;
+    } catch(err) {
+      // We consider that the entity does not exist if an error occurs
+      return false;
+    }
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
@@ -48,6 +54,10 @@ interface ExistsOptions<TEntity extends ObjectLiteral> {
   columnName: keyof TEntity;
 }
 
+/** 
+ * Validation decorator that checks if an entity with the given column name and value exists in the database.
+ * 
+ */
 export function Exists<TEntity extends ObjectLiteral>(
   options: ExistsOptions<TEntity>,
   validationOptions?: ValidationOptions,

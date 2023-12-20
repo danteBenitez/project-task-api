@@ -1,34 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { FindAllParams } from './dto/params/find-all.params';
+import { FindOneParams } from './dto/params/find-one.params';
 
-@Controller('projects')
+@Controller('')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @Post()
+  @Post('/projects')
   create(@Body() createProjectDto: CreateProjectDto) {
     return this.projectsService.create(createProjectDto);
   }
 
-  @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  @Get('/projects')
+  findAll(@Query() params: FindAllParams) {
+    return this.projectsService.findAll(params);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+  @Get('/projects/:id')
+  findOne(@Param() params: FindOneParams) {
+    return this.projectsService.findOne(params);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(+id, updateProjectDto);
+  @Get('/users/:id/projects')
+  findByAuthor(@Param() params: FindOneParams) {
+    return this.projectsService.findByAuthor(params);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(+id);
+  @Patch('/projects/:id')
+  update(@Param() params: FindOneParams, @Body() updateProjectDto: UpdateProjectDto) {
+    return this.projectsService.update(params, updateProjectDto);
+  }
+
+  @Delete('/projects/:id')
+  async remove(@Param() params: FindOneParams) {
+    return this.projectsService.remove(params);
   }
 }

@@ -7,6 +7,7 @@ import {
     UpdateDateColumn,
     DeleteDateColumn,
     ManyToOne,
+    JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -22,7 +23,15 @@ export class Project {
 
     // A user can create many projects 
     @ManyToOne(() => User, user => user.projects)
+    @JoinColumn({ name: 'author_id' })
     author: User;
+
+    author_id: string;
+
+    @Column({
+        nullable: true
+    })
+    logo_url: string;
 
     @CreateDateColumn()
     created_at: Date;

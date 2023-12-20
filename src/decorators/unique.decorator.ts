@@ -22,12 +22,17 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
   ): Promise<boolean> {
     console.log("Validating unique constraint");
     const { entity, columnName } = args.constraints[0];
-    const existing = await this.entityManager.getRepository(entity).findOne({
-      where: {
-        [columnName]: property,
-      },
-    });
-    return !existing;
+    try {
+      const existing = await this.entityManager.getRepository(entity).findOne({
+        where: {
+          [columnName]: property,
+        },
+      });
+      return !existing;
+    } catch(err) {
+      // We consider that the entity does not exist if an error occurs
+      return false;
+    }
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
