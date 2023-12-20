@@ -6,50 +6,57 @@ import {
   ValidationOptions,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { EntityManager, EntityTarget, ObjectLiteral  } from 'typeorm';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
+import { EntityManager, EntityTarget, ObjectLiteral} from 'typeorm';
+import { EntityType } from 'src/types/entity.type';
 
-interface IsUniqueValidationArguments<TEntity extends ObjectLiteral> extends ValidationArguments {
+interface ExistsArguments<TEntity extends ObjectLiteral> extends ValidationArguments {
   constraints: [{ entity: EntityTarget<ObjectLiteral>; columnName: keyof TEntity }];
 }
 
-@ValidatorConstraint({ name: 'IsUnique', async: true })
+@ValidatorConstraint({ name: 'Exists', async: true })
 @Injectable()
-export class IsUniqueConstraint implements ValidatorConstraintInterface {
+export class ExistsConstraint implements ValidatorConstraintInterface { 
+  entity: EntityType;
+  columnName: string | number | symbol;
+
   constructor(private readonly entityManager: EntityManager) {}
+
   async validate<TEntity extends ObjectLiteral>(
     property: any,
-    args: IsUniqueValidationArguments<TEntity>,
+    args: ExistsArguments<TEntity>,
   ): Promise<boolean> {
     const { entity, columnName } = args.constraints[0];
+    this.entity = entity;
+    this.columnName = columnName;
     const existing = await this.entityManager.getRepository(entity).findOne({
       where: {
         [columnName]: property,
       },
     });
-    return !existing;
+    return !!existing;
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `${validationArguments.property} must be unique`;
+    const metadata = this.entityManager.getRepository(this.entity).metadata;
+    return `${metadata.name} with ${String(this.columnName)} == ${validationArguments.property} does not exist`;
   }
 }
 
-interface IsUniqueOptions<TEntity extends ObjectLiteral> {
+interface ExistsOptions<TEntity extends ObjectLiteral> {
   entity: EntityTarget<TEntity>;  
   columnName: keyof TEntity;
 }
 
-export function IsUnique<TEntity extends ObjectLiteral>(
-  options: IsUniqueOptions<TEntity>,
+export function Exists<TEntity extends ObjectLiteral>(
+  options: ExistsOptions<TEntity>,
   validationOptions?: ValidationOptions,
 ) {
   return function (object: any, propertyName: string) {
     registerDecorator({
-      name: 'IsUnique',
+      name: 'Exists',
       propertyName,
       target: object.constructor,
-      validator: IsUniqueConstraint,
+      validator: ExistsConstraint,
       async: true,
       constraints: [options],
       options: validationOptions,

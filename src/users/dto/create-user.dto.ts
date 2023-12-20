@@ -15,7 +15,7 @@ export class CreateUserDto extends User {
     message: 'A user must have a name',
   })
   @IsNotEmpty()
-  @IsUnique(
+  @IsUnique<User>(
     {
       entity: User,
       columnName: 'name',
@@ -31,7 +31,7 @@ export class CreateUserDto extends User {
     message: 'A user must have an email',
   })
   @IsEmail()
-  @IsUnique(
+  @IsUnique<User>(
     {
       entity: User,
       columnName: 'email',
