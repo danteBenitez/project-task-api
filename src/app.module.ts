@@ -9,6 +9,7 @@ import { IsUniqueConstraint } from './decorators/unique.decorator';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { ExistsConstraint } from './decorators/exists.decorator';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ExistsConstraint } from './decorators/exists.decorator';
     }),
     ProjectsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsUniqueConstraint, ExistsConstraint],

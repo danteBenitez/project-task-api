@@ -8,7 +8,8 @@ const configWithDBUrl = z.object({
         URL: z.string().url(),
         HAS_URL: z.literal(true)
     }),
-    SALT_ROUNDS: z.string()
+    SALT_ROUNDS: z.string(),
+    SECRET: z.string()
 })
 
 const configWithoutDBUrl = z.object({
@@ -22,7 +23,8 @@ const configWithoutDBUrl = z.object({
         HAS_URL: z.literal(false),
         DIALECT: z.enum(['postgres', 'mysql', 'mariadb', 'sqlite', 'mssql'])
     }),
-    SALTS_ROUNDS: z.string()
+    SALTS_ROUNDS: z.string(),
+    SECRET: z.string()
 });
 
 const configSchema = z.union([configWithDBUrl, configWithoutDBUrl]);
@@ -40,7 +42,8 @@ export default () => {
             HAS_URL: !!process.env.DB_URL,
             DIALECT: process.env.DB_DIALECT ?? 'postgres'
         },
-        SALT_ROUNDS: process.env.SALT_ROUNDS ?? '10'
+        SALT_ROUNDS: process.env.SALT_ROUNDS ?? '10',
+        SECRET: process.env.SECRET ?? 'secret'
     });
 
     return validated;

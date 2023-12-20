@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FindUserResponse } from './responses/find-user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -49,6 +48,24 @@ export class UsersService {
     }
 
     return found;
+  }
+
+  async findOneByNameOrEmail({ name = '', email = '' }: {
+    name?: string, email?: string
+  }): Promise<User> {
+    const found = await this.userRepository.findOne({
+      where: [{ name }, { email }],
+    });
+
+    if (!found) {
+      throw new UserNotFoundError();
+    }
+
+    return found;
+  }
+
+  async comparePassword(user: User, password: string) {
+    return bcrypt.compare(password, user.password);
   }
 
   async update(
