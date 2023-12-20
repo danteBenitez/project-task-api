@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ConflictException,
+  UseGuards
 } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import {
@@ -19,6 +20,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FindOneParams } from './dto/params/find-one.params';
 import { UpdateOneParams } from './dto/params/update-one.params';
 import { FindUserResponse } from './responses/find-user';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('users')
 export class UsersController {
@@ -40,6 +42,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<FindUserResponse[]> {
     return this.usersService
