@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ConflictException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ConflictException,
+} from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
-import { UserConflictError, UserNotFoundError, UsersService } from './users.service';
+import {
+  UserConflictError,
+  UserNotFoundError,
+  UsersService,
+} from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindOneParams } from './dto/params/find-one.params';
 import { UpdateOneParams } from './dto/params/update-one.params';
+import { FindUserResponse } from './responses/find-user';
 
 @Controller('users')
 export class UsersController {
@@ -15,12 +29,12 @@ export class UsersController {
     try {
       const created = this.usersService.create(createUserDto);
       return created;
-    } catch(e) {
+    } catch (e) {
       if (e instanceof UserConflictError) {
         throw new ConflictException(e.message);
       }
       console.log(e);
-      throw e; 
+      throw e;
     }
   }
 
@@ -33,29 +47,54 @@ export class UsersController {
   findOne(@Param() { id }: FindOneParams) {
     try {
       const found = this.usersService.findOne({
-        id
+        id,
       });
       return found;
     } catch (e) {
       if (e instanceof UserNotFoundError) {
         throw new NotFoundException(e.message);
-      } 
+      }
       console.log(e);
       throw e;
     }
   }
 
   @Patch(':id')
-  update(@Param() { id }: UpdateOneParams, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update({
-      id: id
-    }, updateUserDto);
+  async update(
+    @Param() { id }: UpdateOneParams,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<FindUserResponse> {
+    try {
+      const found = await this.usersService.update(
+        {
+          id: id,
+        },
+        updateUserDto,
+      );
+      return new FindUserResponse(found);
+    } catch (e) {
+      if (e instanceof UserNotFoundError) {
+        throw new NotFoundException(e.message);
+      }
+      console.log(e);
+      throw e;
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove({
-      id
-    });
+  async remove(@Param() { id }: FindOneParams): Promise<FindUserResponse> {
+    try {
+      const found = await this.usersService.remove({
+        id,
+      });
+      return new FindUserResponse(found);
+
+    } catch (e) {
+      if (e instanceof UserNotFoundError) {
+        throw new NotFoundException(e.message);
+      }
+      console.log(e);
+      throw e;
+    }
   }
 }
