@@ -25,10 +25,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<FindUserResponse> {
     try {
-      const created = this.usersService.create(createUserDto);
-      return created;
+      const created = await this.usersService.create(createUserDto);
+      return new FindUserResponse(created);
     } catch (e) {
       if (e instanceof UserConflictError) {
         throw new ConflictException(e.message);
@@ -39,17 +41,19 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(): Promise<FindUserResponse[]> {
+    return this.usersService
+      .findAll()
+      .then((users) => users.map((user) => new FindUserResponse(user)));
   }
 
   @Get(':id')
-  findOne(@Param() { id }: FindOneParams) {
+  async findOne(@Param() { id }: FindOneParams): Promise<FindUserResponse> {
     try {
-      const found = this.usersService.findOne({
+      const found = await this.usersService.findOne({
         id,
       });
-      return found;
+      return new FindUserResponse(found);
     } catch (e) {
       if (e instanceof UserNotFoundError) {
         throw new NotFoundException(e.message);
@@ -71,7 +75,7 @@ export class UsersController {
         },
         updateUserDto,
       );
-      return new FindUserResponse(found);
+      return found;
     } catch (e) {
       if (e instanceof UserNotFoundError) {
         throw new NotFoundException(e.message);
@@ -88,7 +92,6 @@ export class UsersController {
         id,
       });
       return new FindUserResponse(found);
-
     } catch (e) {
       if (e instanceof UserNotFoundError) {
         throw new NotFoundException(e.message);

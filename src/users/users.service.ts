@@ -25,21 +25,21 @@ export class UsersService {
     private readonly config: ConfigService
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<FindUserResponse> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const created = this.userRepository.create(createUserDto);
     const merged = this.userRepository.merge(created, {
       // @ts-expect-error SALT_ROUNDS is not being recognized as a valid key
       password: await bcrypt.hash(createUserDto.password, +this.config.get<ENVIRONMENT["SALT_ROUNDS"]>('SALT_ROUNDS')),
     })
     await this.userRepository.save(merged);
-    return new FindUserResponse(merged);
+    return merged;
   }
 
-  async findAll(): Promise<FindUserResponse[]> {
-    return (await this.userRepository.find()).map(user => new FindUserResponse(user));
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  async findOne({ id }: FindOneParams): Promise<FindUserResponse> {
+  async findOne({ id }: FindOneParams): Promise<User> {
     const found = await this.userRepository.findOne({
       where: { user_id: id },
     });
@@ -48,13 +48,13 @@ export class UsersService {
       throw new UserNotFoundError();
     }
 
-    return new FindUserResponse(found);
+    return found;
   }
 
   async update(
     { id }: UpdateOneParams,
     updateUserDto: UpdateUserDto,
-  ): Promise<FindUserResponse> {
+  ): Promise<User> {
     const found = await this.userRepository.findOne({
       where: { user_id: id },
     });
@@ -65,10 +65,10 @@ export class UsersService {
 
     const updated = this.userRepository.merge(found, updateUserDto);
     await this.userRepository.save(updated);
-    return new FindUserResponse(updated);
+    return updated;
   }
 
-  async remove({ id }: FindOneParams): Promise<FindUserResponse> {
+  async remove({ id }: FindOneParams): Promise<User> {
     const found = await this.userRepository.findOne({
       where: { user_id: id },
     });
@@ -78,6 +78,6 @@ export class UsersService {
     await this.userRepository.softDelete({
       user_id: id,
     });
-    return new FindUserResponse(found);
+    return found;
   }
 }
