@@ -7,7 +7,6 @@ import {
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { EntityManager, EntityTarget, ObjectLiteral  } from 'typeorm';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 interface IsUniqueValidationArguments<TEntity extends ObjectLiteral> extends ValidationArguments {
   constraints: [{ entity: EntityTarget<ObjectLiteral>; columnName: keyof TEntity }];
@@ -21,6 +20,7 @@ export class IsUniqueConstraint implements ValidatorConstraintInterface {
     property: any,
     args: IsUniqueValidationArguments<TEntity>,
   ): Promise<boolean> {
+    console.log("Validating unique constraint");
     const { entity, columnName } = args.constraints[0];
     const existing = await this.entityManager.getRepository(entity).findOne({
       where: {

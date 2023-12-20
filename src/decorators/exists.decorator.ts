@@ -25,6 +25,7 @@ export class ExistsConstraint implements ValidatorConstraintInterface {
     property: any,
     args: ExistsArguments<TEntity>,
   ): Promise<boolean> {
+    console.log("Validating exists constraint");
     const { entity, columnName } = args.constraints[0];
     this.entity = entity;
     this.columnName = columnName;
@@ -38,7 +39,7 @@ export class ExistsConstraint implements ValidatorConstraintInterface {
 
   defaultMessage(validationArguments?: ValidationArguments): string {
     const metadata = this.entityManager.getRepository(this.entity).metadata;
-    return `${metadata.name} with ${String(this.columnName)} == ${validationArguments.property} does not exist`;
+    return `${metadata.name} with ${String(this.columnName)} == ${validationArguments.value} does not exist`;
   }
 }
 

@@ -4,6 +4,7 @@ import { UserConflictError, UserNotFoundError, UsersService } from './users.serv
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindOneParams } from './dto/params/find-one.params';
+import { UpdateOneParams } from './dto/params/update-one.params';
 
 @Controller('users')
 export class UsersController {
@@ -45,7 +46,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param() { id }: UpdateOneParams, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update({
       id: id
     }, updateUserDto);

@@ -9,6 +9,7 @@ import { FindOneParams } from './dto/params/find-one.params';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { ENVIRONMENT } from 'src/config/env';
+import { UpdateOneParams } from './dto/params/update-one.params';
 
 export class UserConflictError extends Error {
   message = 'User already exists';
@@ -51,7 +52,7 @@ export class UsersService {
   }
 
   async update(
-    { id }: FindOneParams,
+    { id }: UpdateOneParams,
     updateUserDto: UpdateUserDto,
   ): Promise<FindUserResponse> {
     const found = await this.userRepository.findOne({

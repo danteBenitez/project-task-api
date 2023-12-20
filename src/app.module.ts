@@ -8,6 +8,7 @@ import { getConnectionOptions } from './database/config';
 import { IsUniqueConstraint } from './decorators/unique.decorator';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
+import { ExistsConstraint } from './decorators/exists.decorator';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { UsersModule } from './users/users.module';
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService, IsUniqueConstraint],
+  providers: [AppService, IsUniqueConstraint, ExistsConstraint],
 })
 export class AppModule {}
