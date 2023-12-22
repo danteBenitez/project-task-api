@@ -1,5 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  NotFoundException,
+} from '@nestjs/common';
+import { ProjectNotFoundError, ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { FindAllParams } from './dto/params/find-all.params';
@@ -21,7 +31,13 @@ export class ProjectsController {
 
   @Get('/projects/:id')
   findOne(@Param() params: FindOneParams) {
-    return this.projectsService.findOne(params);
+    try {
+      return this.projectsService.findOne(params);
+    } catch (err) {
+      if (err instanceof ProjectNotFoundError) {
+        throw new NotFoundException('Project not found');
+      }
+    }
   }
 
   @Get('/users/:id/projects')
@@ -30,12 +46,27 @@ export class ProjectsController {
   }
 
   @Patch('/projects/:id')
-  update(@Param() params: FindOneParams, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(params, updateProjectDto);
+  update(
+    @Param() params: FindOneParams,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
+    try {
+      return this.projectsService.update(params, updateProjectDto);
+    } catch(err) {
+      if (err instanceof ProjectNotFoundError) {
+        throw new NotFoundException('Project not found');
+      }
+    }
   }
 
   @Delete('/projects/:id')
   async remove(@Param() params: FindOneParams) {
-    return this.projectsService.remove(params);
+    try {
+      return this.projectsService.remove(params);
+    } catch (err) {
+      if (err instanceof ProjectNotFoundError) {
+        throw new NotFoundException('Project not found');
+      }
+    }
   }
 }
