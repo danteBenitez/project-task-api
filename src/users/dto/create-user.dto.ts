@@ -7,7 +7,7 @@ import {
   IsUrl,
   MinLength,
 } from 'class-validator';
-import { IsUnique } from '../../decorators/unique.decorator';
+import { IsUnique } from 'src/common/decorators/unique.decorator';
 import { User } from '../entities/user.entity';
 
 export class CreateUserDto extends User {

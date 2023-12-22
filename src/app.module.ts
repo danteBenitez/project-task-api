@@ -5,10 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configEnv, { ENVIRONMENT } from './config/env';
 import { getConnectionOptions } from './database/config';
-import { IsUniqueConstraint } from './decorators/unique.decorator';
+import { IsUniqueConstraint } from 'src/common/decorators/unique.decorator';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
-import { ExistsConstraint } from './decorators/exists.decorator';
+import { ExistsConstraint } from 'src/common/decorators/exists.decorator';
 import { AuthModule } from './auth/auth.module';
 
 @Module({

@@ -1,4 +1,4 @@
-import { Exists } from "src/decorators/exists.decorator";
+import { Exists } from "src/common/decorators/exists.decorator";
 import { FindOneParams } from "./find-one.params";
 import { User } from "src/users/entities/user.entity";
 

@@ -1,4 +1,4 @@
-import { Exists } from 'src/decorators/exists.decorator';
+import { Exists } from 'src/common/decorators/exists.decorator';
 import { Project } from '../entities/project.entity';
 import { User } from 'src/users/entities/user.entity';
 import { IsNotEmpty, IsOptional, IsString, IsUUID, IsUrl, MaxLength } from 'class-validator';
