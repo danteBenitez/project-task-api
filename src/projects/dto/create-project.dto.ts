@@ -47,11 +47,10 @@ export class CreateProjectDto extends Project {
     message: 'logo_url must be a string',
   })
   @IsNotEmpty({
-    message: 'logo_url is required',
+    message: 'logo_url must be not empty',
   })
-  @IsUrl(
-    {
-      require_protocol: true,
+  @IsUrl({
+    require_protocol: true,
     },
     {
       message: 'logo_url must be a valid URL',
