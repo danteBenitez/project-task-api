@@ -1,3 +1,4 @@
+import { Role, Roles } from 'src/auth/entities/role.entity';
 import { Project } from '../../projects/entities/project.entity';
 import {
   Entity,
@@ -7,6 +8,8 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -31,6 +34,17 @@ export class User {
   // A user can create many projects
   @OneToMany(() => Project, (project) => project.author)
   projects: Project[];
+
+  // A user can have only one role
+  @ManyToOne(() => Role, (role) => role.users, {
+    nullable: true
+  })
+  @JoinColumn({ name: 'role_id', referencedColumnName: 'role_id' })
+  role: Role;
+
+  get isAdmin() {
+    return this.role.name.match(Roles.ADMIN);
+  }
 
   @CreateDateColumn()
   created_at: Date;

@@ -33,6 +33,12 @@ export class Project {
     })
     logo_url: string;
 
+    @Column({
+        default: false,
+        type: 'boolean'
+    })
+    public: boolean;
+
     @CreateDateColumn()
     created_at: Date;
 

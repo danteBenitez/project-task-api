@@ -7,6 +7,7 @@ import { useContainer } from 'class-validator';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({
+    forbidNonWhitelisted: true,
     transform: true
   }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(

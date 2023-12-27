@@ -10,6 +10,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { ExistsConstraint } from 'src/common/decorators/exists.decorator';
 import { AuthModule } from './auth/auth.module';
+import { CaslModule } from './casl/casl.module';
+import { SeederModule } from './database/seeder/seeder.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { AuthModule } from './auth/auth.module';
     ProjectsModule,
     UsersModule,
     AuthModule,
+    CaslModule,
+    SeederModule
   ],
   controllers: [AppController],
   providers: [AppService, IsUniqueConstraint, ExistsConstraint],
