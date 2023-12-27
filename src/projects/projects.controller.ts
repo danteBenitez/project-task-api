@@ -21,6 +21,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { ProjectPermissionGuard } from './guards/project.permission.guard';
 import { RequireAbility } from 'src/casl/decorators/permission.decorator';
+import { FindProjectResponse } from './responses/find-one.response';
 
 @UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('')
@@ -31,20 +32,22 @@ export class ProjectsController {
   ) {}
 
   @Post('/projects')
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  async create(@Body() createProjectDto: CreateProjectDto, @Req() req: Request): Promise<FindProjectResponse> {
+    const created = await this.projectsService.create(createProjectDto, req.user);
+    return new FindProjectResponse(created);
   }
 
   @Get('/projects')
-  findAll(@Query() params: FindAllParams) {
-    return this.projectsService.findAll(params);
+  async findAll(@Query() params: FindAllParams): Promise<FindProjectResponse[]> {
+    return (await this.projectsService.findAll(params)).map(project => new FindProjectResponse(project));
   }
 
   @RequireAbility("read")
   @Get('/projects/:id')
-  findOne(@Param() params: FindOneParams) {
+  async findOne(@Param() params: FindOneParams): Promise<FindProjectResponse> {
     try {
-      return this.projectsService.findOne(params);
+      const found = await this.projectsService.findOne(params);
+      return new FindProjectResponse(found);
     } catch (err) {
       if (err instanceof ProjectNotFoundError) {
         throw new NotFoundException('Project not found');
@@ -53,8 +56,8 @@ export class ProjectsController {
   }
 
   @Get('/users/:id/projects')
-  findByAuthor(@Param() params: FindOneParams) {
-    return this.projectsService.findByAuthor(params);
+  async findByAuthor(@Param() params: FindOneParams): Promise<FindProjectResponse[]> {
+    return (await this.projectsService.findByAuthor(params)).map(project => new FindProjectResponse(project));
   }
 
   @RequireAbility("update")
@@ -62,15 +65,10 @@ export class ProjectsController {
   async update(
     @Param() params: FindOneParams,
     @Body() updateProjectDto: UpdateProjectDto,
-    @Req() request: Request
-  ) {
+  ): Promise<FindProjectResponse> {
     try {
-      const found = await this.projectsService.findOne(params);
-      const ability = this.abilityFactory.createForUser(request.user);
-      if (!ability.can('update', found)) {
-        throw new NotFoundException('Project not found');
-      }
-      return this.projectsService.update(params, updateProjectDto);
+      const updated = await this.projectsService.update(params, updateProjectDto);
+      return new FindProjectResponse(updated);
     } catch(err) {
       if (err instanceof ProjectNotFoundError) {
         throw new NotFoundException('Project not found');

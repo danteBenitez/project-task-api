@@ -1,7 +1,5 @@
-import { Exists } from 'src/common/decorators/exists.decorator';
 import { Project } from '../entities/project.entity';
-import { User } from 'src/users/entities/user.entity';
-import { IsNotEmpty, IsOptional, IsString, IsUUID, IsUrl, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateProjectDto extends Project {
   @IsString({
@@ -24,23 +22,6 @@ export class CreateProjectDto extends Project {
   })
   description: string;
 
-
-  @Exists<User>({
-    columnName: 'user_id',
-    entity: User,
-  }, {
-    message: 'Author with given ID does not exist',
-  })
-  @IsUUID('all', {
-    message: 'Invalid author ID',
-  })
-  @IsString({
-    message: 'author_id must be a string',
-  })
-  @IsNotEmpty({
-    message: 'author_id is required',
-  })
-  author_id: string;
 
   @IsOptional()
   @IsString({

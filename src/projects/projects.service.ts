@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { FindAllParams } from './dto/params/find-all.params';
 import { FindOneParams } from './dto/params/find-one.params';
 import { UpdateOneParams } from './dto/params/update-one.params';
+import { User } from 'src/users/entities/user.entity';
 
 export class ProjectNotFoundError extends Error {
   message = "Project not found";
@@ -18,9 +19,12 @@ export class ProjectsService {
     @InjectRepository(Project) private projectRepository: Repository<Project>,
   ) {}
 
-  async create(createProjectDto: CreateProjectDto): Promise<Project> {
+  async create(createProjectDto: CreateProjectDto, user: User): Promise<Project> {
     const created = this.projectRepository.create(createProjectDto);
-    await this.projectRepository.save(created);
+    const withUser = this.projectRepository.merge(created, {
+      author: user
+    });
+    await this.projectRepository.save(withUser);
     return created;
   }
 
