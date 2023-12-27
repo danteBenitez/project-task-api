@@ -1,4 +1,4 @@
-import { Role, Roles } from 'src/auth/entities/role.entity';
+import { Role } from 'src/auth/entities/role.entity';
 import { Project } from '../../projects/entities/project.entity';
 import {
   Entity,
@@ -39,12 +39,10 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users, {
     nullable: true
   })
-  @JoinColumn({ name: 'role_id', referencedColumnName: 'role_id' })
   role: Role;
 
-  get isAdmin() {
-    return this.role.name.match(Roles.ADMIN);
-  }
+  @JoinColumn({ name: 'role_id', referencedColumnName: 'role_id' })
+  role_id: string;
 
   @CreateDateColumn()
   created_at: Date;

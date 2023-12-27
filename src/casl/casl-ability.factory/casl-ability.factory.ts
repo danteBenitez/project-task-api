@@ -1,5 +1,6 @@
-import { AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects, PureAbility } from "@casl/ability";
+import { Ability, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects, PureAbility } from "@casl/ability";
 import { Injectable } from "@nestjs/common";
+import { Roles } from "src/auth/entities/role.entity";
 import { Project } from "src/projects/entities/project.entity";
 import { User } from "src/users/entities/user.entity";
 
@@ -37,10 +38,10 @@ export type AppAbility = PureAbility<[Actions, Subjects]>;
 export class CaslAbilityFactory {
     createForUser(user: User) {
         const builder = new AbilityBuilder<AppAbility>(
-           PureAbility as AbilityClass<AppAbility> 
+           Ability as AbilityClass<AppAbility> 
         );
-
-        if (user.isAdmin) {
+        console.log(user);
+        if (user.role.name == Roles.ADMIN) {
             // An admin can do everything
             builder.can('manage', 'all');
         } else {
